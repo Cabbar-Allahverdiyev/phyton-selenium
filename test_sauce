@@ -71,8 +71,6 @@ class Test_Sauce :
         errorMessage= self.actionCommand.findByXPath(self.loginBtnMessagePath)
         assert errorMessage.text=="Epic sadface: Sorry, this user has been locked out."
 
-    @pytest.mark.skip()
-    def test_validPerson():
-        assert "aaa"=="bbb"
+
 
 

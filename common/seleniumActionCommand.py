@@ -17,3 +17,7 @@ class SeleniumActionCommand:
     def findByXPath(self,xpath:str):
         findedElement=self.driver.find_element(By.XPATH,xpath)
         return findedElement ;
+
+    def findByCssSelector(self,cssSelector):
+        findedElement=self.driver.find_element(By.CSS_SELECTOR,cssSelector)
+        return findedElement ;

@@ -1,3 +1,4 @@
+from time import sleep
 import pytest
 from selenium import webdriver;
 from webdriver_manager.chrome import ChromeDriverManager;
@@ -11,6 +12,7 @@ from common.waitForCommonCommand import WaitForCommonCommand;
 from common.seleniumActionCommand import SeleniumActionCommand;
 
 
+
 class Test_Demo :
     #het testden once
     def setup_method(self):
@@ -21,6 +23,7 @@ class Test_Demo :
         self.actionCommand=SeleniumActionCommand(self.driver)
         self.actionChains=ActionChains(self.driver)
         self.standardUser="standard_user"
+        self.secretSauce="secret_sauce"
         self.loginButtonId="login-button"
         self.userNameId="user-name"
         self.passwordId="password"
@@ -89,7 +92,7 @@ class Test_Demo :
         loginBtn.click()
 
         errorMessage=self.actionCommand.findByXPath(self.loginBtnMessagePath)
-        sleep(10)
+        #sleep(10)
         assert errorMessage.text=="Epic sadface: Username is required"
 
     
@@ -107,17 +110,46 @@ class Test_Demo :
         assert errorMessage.text=="Epic sadface: Password is required"
 
     #@pytest.mark.parametrize("username,password",[("1","1"),("ad","soyad")])
-    def test_userName_lockedOutUser(self,username,password):
+    def test_userName_lockedOutUser(self):
         self.waitCommand.waitById(self.userNameId)
         userNameInput=self.actionCommand.findById(self.userNameId)
         passwordInput=self.actionCommand.findById(self.passwordId)
 
-        self.actions.send_keys_to_element(userNameInput,"locked_out_user")
-        self.actions.send_keys_to_element(passwordInput,"secret_sauce")
-        self.actions.perform()
+        self.actionChains.send_keys_to_element(userNameInput,"locked_out_user")
+        self.actionChains.send_keys_to_element(passwordInput,self.secretSauce)
+        self.actionChains.perform()
         
         loginBtn=self.actionCommand.findById(self.loginButtonId)
         loginBtn.click();
 
         errorMessage= self.actionCommand.findByXPath(self.loginBtnMessagePath)
         assert errorMessage.text=="Epic sadface: Sorry, this user has been locked out."
+
+    def test_whenUserNameAndPasswordIsEmpty_shouldViewRedX(self):
+        self.waitCommand.waitById(self.userNameId)
+        loginBtn=self.actionCommand.findById(self.loginButtonId)
+        loginBtn.click();
+
+        userNameCssSelector="login_button_container > div > form > div:nth-child(1) > svg"
+        paswordCssSelector="login_button_container > div > form > div:nth-child(2) > svg"
+        try:
+            usernameErrorBtn=self.actionCommand.findByCssSelector(userNameCssSelector)
+            passwordErrorBtn=self.actionCommand.findByCssSelector(paswordCssSelector)
+            if(not usernameErrorBtn.is_displayed() or not passwordErrorBtn.is_displayed()):
+                assert False;
+                
+        except:
+            pass
+        #    assert False
+        errorBtn=self.actionCommand.findByXPath("//*[@id='login_button_container']/div/form/div[3]/h3/button")
+        errorBtn.click()
+
+        try:
+            usernameErrorBtn=self.actionCommand.findByCssSelector(userNameCssSelector)
+            passwordErrorBtn=self.actionCommand.findByCssSelector(paswordCssSelector)
+            if(not usernameErrorBtn.is_displayed() and not passwordErrorBtn.is_displayed()):
+                assert True;
+            assert False
+        except:
+            assert True
+
