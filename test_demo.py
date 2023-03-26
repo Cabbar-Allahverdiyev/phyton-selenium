@@ -1,13 +1,14 @@
 import pytest
 from selenium import webdriver;
 from webdriver_manager.chrome import ChromeDriverManager;
-from time import sleep;
 from selenium.webdriver.common.by import By;
 from selenium.webdriver.support.wait import WebDriverWait;
 from selenium.webdriver.support import expected_conditions;
 from selenium.webdriver.common.action_chains import ActionChains
 from pathlib import Path;
 from datetime import date
+from common.waitForCommonCommand import WaitForCommonCommand;
+from common.seleniumActionCommand import SeleniumActionCommand;
 
 
 class Test_Demo :
@@ -16,6 +17,14 @@ class Test_Demo :
         self.driver=webdriver.Chrome(ChromeDriverManager().install())
         self.driver.maximize_window()
         self.driver.get("https://www.saucedemo.com/")
+        self.waitCommand=WaitForCommonCommand(self.driver)
+        self.actionCommand=SeleniumActionCommand(self.driver)
+        self.actionChains=ActionChains(self.driver)
+        self.standardUser="standard_user"
+        self.loginButtonId="login-button"
+        self.userNameId="user-name"
+        self.passwordId="password"
+        self.loginBtnMessagePath="//*[@id='login_button_container']/div/form/div[3]/h3"
         #gunun tarixini al yoxdusa yarat
         #24.03.23
         self.folderPath=str(date.today())
@@ -50,6 +59,7 @@ class Test_Demo :
         assert errorMessage.text == "Epic sadface: Username and password do not match any user in this service"
         
     
+
     def test_valid_login(self):
         # self.driver.get("https://www.saucedemo.com/")
         WebDriverWait(self.driver,5).until(
@@ -71,3 +81,43 @@ class Test_Demo :
         
         loginBtn.click()
         assert True
+
+#day4 task 2
+    def test_empty_login_password(self):
+        self.waitCommand.waitById(self.userNameId)
+        loginBtn=self.actionCommand.findById(self.loginButtonId)
+        loginBtn.click()
+
+        errorMessage=self.actionCommand.findByXPath(self.loginBtnMessagePath)
+        sleep(10)
+        assert errorMessage.text=="Epic sadface: Username is required"
+
+    
+    def test_invalid_password(self):
+        self.waitCommand.waitById(self.userNameId)
+        userNameInput=self.actionCommand.findById(self.userNameId)
+        userNameInput.send_keys(self.standardUser)
+
+        loginBtn=self.actionCommand.findById(self.loginButtonId)
+        loginBtn.click();
+
+        self.waitCommand.waitByXPath(self.loginBtnMessagePath)
+        errorMessage= self.actionCommand.findByXPath(self.loginBtnMessagePath)
+
+        assert errorMessage.text=="Epic sadface: Password is required"
+
+    #@pytest.mark.parametrize("username,password",[("1","1"),("ad","soyad")])
+    def test_userName_lockedOutUser(self,username,password):
+        self.waitCommand.waitById(self.userNameId)
+        userNameInput=self.actionCommand.findById(self.userNameId)
+        passwordInput=self.actionCommand.findById(self.passwordId)
+
+        self.actions.send_keys_to_element(userNameInput,"locked_out_user")
+        self.actions.send_keys_to_element(passwordInput,"secret_sauce")
+        self.actions.perform()
+        
+        loginBtn=self.actionCommand.findById(self.loginButtonId)
+        loginBtn.click();
+
+        errorMessage= self.actionCommand.findByXPath(self.loginBtnMessagePath)
+        assert errorMessage.text=="Epic sadface: Sorry, this user has been locked out."
