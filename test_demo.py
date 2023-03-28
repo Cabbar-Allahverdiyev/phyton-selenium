@@ -155,4 +155,34 @@ class Test_Demo :
             assert False
         except:
             assert True
+    
+    def test_whenValidLogin_shouldBeInInventory(self):
+        self.waitCommand.waitById(self.userNameId)
+        userNameInput=self.actionCommand.findById(self.userNameId)
+        passwordInput=self.actionCommand.findById(self.passwordId)
 
+        self.actionChains.send_keys_to_element(userNameInput,self.standardUser)
+        self.actionChains.send_keys_to_element(passwordInput,self.secretSauce)
+        self.actionChains.perform()
+        loginBtn=self.actionCommand.findById(self.loginButtonId)
+        loginBtn.click();
+
+        currentUrl=str(self.driver.current_url)
+        assert "https://www.saucedemo.com/inventory.html" == currentUrl
+
+        
+    def test_whenValidLogin_shoulBeVisibleSixProduct(self):
+        self.waitCommand.waitById(self.userNameId)
+        userNameInput=self.actionCommand.findById(self.userNameId)
+        passwordInput=self.actionCommand.findById(self.passwordId)
+
+        self.actionChains.send_keys_to_element(userNameInput,self.standardUser)
+        self.actionChains.send_keys_to_element(passwordInput,self.secretSauce)
+        self.actionChains.perform()
+        loginBtn=self.actionCommand.findById(self.loginButtonId)
+        loginBtn.click();
+
+        xpathInventoryContainer="//*[@id='inventory_container']/div"
+        self.waitCommand.waitByXPath(xpathInventoryContainer)
+        countOfProducts=len(self.driver.find_elements(By.CLASS_NAME,"inventory_item"))
+        assert countOfProducts==6
