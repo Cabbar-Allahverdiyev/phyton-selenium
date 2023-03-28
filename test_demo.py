@@ -130,8 +130,11 @@ class Test_Demo :
         loginBtn=self.actionCommand.findById(self.loginButtonId)
         loginBtn.click();
 
-        userNameCssSelector="login_button_container > div > form > div:nth-child(1) > svg"
-        paswordCssSelector="login_button_container > div > form > div:nth-child(2) > svg"
+        userNameCssSelector="#login_button_container > div > form > div:nth-child(1) > svg"
+        paswordCssSelector="#login_button_container > div > form > div:nth-child(2) > svg"
+        sleep(5)
+        usernameErrorBtn:str=""
+        passwordErrorBtn=""
         try:
             usernameErrorBtn=self.actionCommand.findByCssSelector(userNameCssSelector)
             passwordErrorBtn=self.actionCommand.findByCssSelector(paswordCssSelector)
@@ -139,7 +142,7 @@ class Test_Demo :
                 assert False;
                 
         except:
-            pass
+            assert False
         #    assert False
         errorBtn=self.actionCommand.findByXPath("//*[@id='login_button_container']/div/form/div[3]/h3/button")
         errorBtn.click()
