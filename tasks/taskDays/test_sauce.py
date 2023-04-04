@@ -1,4 +1,4 @@
-from time import sleep
+#from time import sleep
 import pytest
 import sys;
 from selenium import webdriver;
@@ -34,7 +34,7 @@ class Test_Sauce :
         self.loginBtnMessagePath="//*[@id='login_button_container']/div/form/div[3]/h3"
         #gunun tarixini al yoxdusa yarat
         #24.03.23
-        self.folderPath=str(date.today())
+        self.folderPath=f"images/screenShots/{str(date.today())}"
         Path(self.folderPath).mkdir(exist_ok=True)
         self.method:str=""
         
@@ -144,7 +144,7 @@ class Test_Sauce :
 
         userNameCssSelector="#login_button_container > div > form > div:nth-child(1) > svg"
         paswordCssSelector="#login_button_container > div > form > div:nth-child(2) > svg"
-        sleep(5)
+        #sleep(5)
         usernameErrorBtn:str=""
         passwordErrorBtn=""
         try:
@@ -203,4 +203,28 @@ class Test_Sauce :
         assert countOfProducts==6
         self.method=sys._getframe().f_code.co_name
 
+    def test_whenClickAddToCart_shouldBeCartItemIconIsRedOne (self):
+        self.waitCommand.waitById(self.userNameId)
+        userNameInput=self.actionCommand.findById(self.userNameId)
+        passwordInput=self.actionCommand.findById(self.passwordId)
+        self.actionChains.send_keys_to_element(userNameInput,self.standardUser)
+        self.actionChains.send_keys_to_element(passwordInput,self.secretSauce)
+        loginBtn=self.actionCommand.findById(self.loginButtonId)
+        loginBtn.click();
 
+        try :
+            self.waitCommand.waitByCssSelector("#item_4_img_link > img")
+        except:
+            assert False
+        
+        self.SauceLabsBackpackAddToCartBtnId="add-to-cart-sauce-labs-backpack";
+        addToCartBtn=self.actionCommand.findById(self.SauceLabsBackpackAddToCartBtnId)
+        addToCartBtn.click();
+
+        try :
+            self.waitCommand.waitByCssSelector("#shopping_cart_container > a > span")
+        except:assert False
+        cartIcon=self.actionCommand.findByCssSelector("#shopping_cart_container > a > span")
+        assert cartIcon.text=="1"
+
+        self.method=sys._getframe().f_code.co_name
