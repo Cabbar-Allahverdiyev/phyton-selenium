@@ -1,5 +1,6 @@
 from time import sleep
 import pytest
+import sys;
 from selenium import webdriver;
 from webdriver_manager.chrome import ChromeDriverManager;
 from selenium.webdriver.common.by import By;
@@ -11,9 +12,12 @@ from datetime import date
 from common.waitForCommonCommand import WaitForCommonCommand;
 from common.seleniumActionCommand import SeleniumActionCommand;
 
+class Test_Sauce : 
 
-
-class Test_Demo :
+    # def __init__(self) :
+    #     self.driver=webdriver.Chrome(ChromeDriverManager().install())
+    #     self.driver.maximize_window()
+    #     self.driver.get("https://www.saucedemo.com/")
     #het testden once
     def setup_method(self):
         self.driver=webdriver.Chrome(ChromeDriverManager().install())
@@ -32,13 +36,17 @@ class Test_Demo :
         #24.03.23
         self.folderPath=str(date.today())
         Path(self.folderPath).mkdir(exist_ok=True)
+        self.method:str=""
         
     #her testden sonra calisar
     def teardown_method(self):
+        path=f"{self.folderPath}/{self.method}.png"
+        self.driver.save_screenshot(path)
         self.driver.quit()
 
     def test_demoFunc(self):
         text="Hello"
+        self.method=sys._getframe().f_code.co_name
         assert text== "Hello"
 
     #@pytest.mark.skip()#parametr olaraq reason verile biler arasdir
@@ -60,7 +68,7 @@ class Test_Demo :
         errorMessage=self.driver.find_element(By.XPATH,"//*[@id='login_button_container']/div/form/div[3]/h3")
         self.driver.save_screenshot(f"{self.folderPath}/test-invalid-login-{username}-{password}.png")
         assert errorMessage.text == "Epic sadface: Username and password do not match any user in this service"
-        
+        self.method=sys._getframe().f_code.co_name
     
 
     def test_valid_login(self):
@@ -84,6 +92,7 @@ class Test_Demo :
         
         loginBtn.click()
         assert True
+        self.method=sys._getframe().f_code.co_name
 
 #day4 task 2
     def test_empty_login_password(self):
@@ -94,6 +103,7 @@ class Test_Demo :
         errorMessage=self.actionCommand.findByXPath(self.loginBtnMessagePath)
         #sleep(10)
         assert errorMessage.text=="Epic sadface: Username is required"
+        self.method=sys._getframe().f_code.co_name
 
     
     def test_invalid_password(self):
@@ -108,6 +118,7 @@ class Test_Demo :
         errorMessage= self.actionCommand.findByXPath(self.loginBtnMessagePath)
 
         assert errorMessage.text=="Epic sadface: Password is required"
+        self.method=sys._getframe().f_code.co_name
 
     #@pytest.mark.parametrize("username,password",[("1","1"),("ad","soyad")])
     def test_userName_lockedOutUser(self):
@@ -124,6 +135,7 @@ class Test_Demo :
 
         errorMessage= self.actionCommand.findByXPath(self.loginBtnMessagePath)
         assert errorMessage.text=="Epic sadface: Sorry, this user has been locked out."
+        self.method=sys._getframe().f_code.co_name
 
     def test_whenUserNameAndPasswordIsEmpty_shouldViewRedX(self):
         self.waitCommand.waitById(self.userNameId)
@@ -155,6 +167,8 @@ class Test_Demo :
             assert False
         except:
             assert True
+
+        self.method=sys._getframe().f_code.co_name
     
     def test_whenValidLogin_shouldBeInInventory(self):
         self.waitCommand.waitById(self.userNameId)
@@ -169,6 +183,7 @@ class Test_Demo :
 
         currentUrl=str(self.driver.current_url)
         assert "https://www.saucedemo.com/inventory.html" == currentUrl
+        self.method=sys._getframe().f_code.co_name
 
         
     def test_whenValidLogin_shoulBeVisibleSixProduct(self):
@@ -186,3 +201,6 @@ class Test_Demo :
         self.waitCommand.waitByXPath(xpathInventoryContainer)
         countOfProducts=len(self.driver.find_elements(By.CLASS_NAME,"inventory_item"))
         assert countOfProducts==6
+        self.method=sys._getframe().f_code.co_name
+
+
