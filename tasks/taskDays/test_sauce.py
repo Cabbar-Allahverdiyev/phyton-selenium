@@ -44,55 +44,7 @@ class Test_Sauce :
         self.driver.save_screenshot(path)
         self.driver.quit()
 
-    def test_demoFunc(self):
-        text="Hello"
-        self.method=sys._getframe().f_code.co_name
-        assert text== "Hello"
 
-    #@pytest.mark.skip()#parametr olaraq reason verile biler arasdir
-    @pytest.mark.parametrize("username,password",[("1","1"),("ad","soyad")])
-    def test_invalid_login(self,username,password):
-        WebDriverWait(self.driver,5).until(
-            expected_conditions.visibility_of_element_located((By.ID,"user-name")));
-        userNameInput=self.driver.find_element(By.ID,"user-name")
-        passwordInput=self.driver.find_element(By.ID,"password")
-        userNameInput.send_keys(username)
-        passwordInput.send_keys(password)
-        WebDriverWait(self.driver,5).until(
-            expected_conditions.visibility_of_element_located((By.ID,"login-button")));
-        loginBtn=self.driver.find_element(By.ID,"login-button")
-        
-        loginBtn.click()
-        # WebDriverWait(self.driver,5).until(
-        #     expected_conditions.visibility_of_element_located((By.XPATH,"//*[@id='login_button_container']/div/form/div[3]/h3")));
-        errorMessage=self.driver.find_element(By.XPATH,"//*[@id='login_button_container']/div/form/div[3]/h3")
-        self.driver.save_screenshot(f"{self.folderPath}/test-invalid-login-{username}-{password}.png")
-        assert errorMessage.text == "Epic sadface: Username and password do not match any user in this service"
-        self.method=sys._getframe().f_code.co_name
-    
-
-    def test_valid_login(self):
-        # self.driver.get("https://www.saucedemo.com/")
-        WebDriverWait(self.driver,5).until(
-            expected_conditions.visibility_of_element_located((By.ID,"user-name")));
-        userNameInput=self.driver.find_element(By.ID,"user-name")
-        passwordInput=self.driver.find_element(By.ID,"password")
-        
-        #Js
-        self.driver.execute_script("window.scrollTo(0,500)")
-
-        #action chains
-        actions=ActionChains(self.driver)
-        actions.send_keys_to_element(userNameInput,"standard_user")
-        actions.send_keys_to_element(passwordInput,"secret_sauce")
-        actions.perform()
-        WebDriverWait(self.driver,5).until(
-            expected_conditions.visibility_of_element_located((By.ID,"login-button")));
-        loginBtn=self.driver.find_element(By.ID,"login-button")
-        
-        loginBtn.click()
-        assert True
-        self.method=sys._getframe().f_code.co_name
 
 #day4 task 2
     def test_empty_login_password(self):
@@ -203,7 +155,7 @@ class Test_Sauce :
         assert countOfProducts==6
         self.method=sys._getframe().f_code.co_name
 
-    def test_whenClickAddToCart_shouldBeCartItemIconIsRedOne (self):
+    def test_whenClickAddToCart_shouldBeCartItemIconIsRedOne(self):
         self.waitCommand.waitById(self.userNameId)
         userNameInput=self.actionCommand.findById(self.userNameId)
         passwordInput=self.actionCommand.findById(self.passwordId)
