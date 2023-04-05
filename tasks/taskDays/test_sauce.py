@@ -1,16 +1,13 @@
-#from time import sleep
 import pytest
 import sys;
 from selenium import webdriver;
 from webdriver_manager.chrome import ChromeDriverManager;
 from selenium.webdriver.common.by import By;
-from selenium.webdriver.support.wait import WebDriverWait;
-from selenium.webdriver.support import expected_conditions;
 from selenium.webdriver.common.action_chains import ActionChains
 from pathlib import Path;
-from datetime import date
-from common.waitForCommonCommand import WaitForCommonCommand;
-from common.seleniumActionCommand import SeleniumActionCommand;
+from datetime import date;
+from commonCommands.waitForCommonCommand import WaitForCommonCommand;
+from commonCommands.seleniumActionCommand import SeleniumActionCommand;
 
 class Test_Sauce : 
 
@@ -31,6 +28,8 @@ class Test_Sauce :
         self.loginButtonId="login-button"
         self.userNameId="user-name"
         self.passwordId="password"
+        self.removeSauceLabsBackpackId="remove-sauce-labs-backpack"
+        self.SauceLabsBackpackAddToCartBtnId="add-to-cart-sauce-labs-backpack";
         self.loginBtnMessagePath="//*[@id='login_button_container']/div/form/div[3]/h3"
         #gunun tarixini al yoxdusa yarat
         #24.03.23
@@ -161,6 +160,34 @@ class Test_Sauce :
         passwordInput=self.actionCommand.findById(self.passwordId)
         self.actionChains.send_keys_to_element(userNameInput,self.standardUser)
         self.actionChains.send_keys_to_element(passwordInput,self.secretSauce)
+        self.actionChains.perform()
+        loginBtn=self.actionCommand.findById(self.loginButtonId)
+        loginBtn.click();
+
+        try :
+            self.waitCommand.waitByCssSelector("#item_4_img_link > img")
+        except:
+            assert False
+        
+        
+        addToCartBtn=self.actionCommand.findById(self.SauceLabsBackpackAddToCartBtnId)
+        addToCartBtn.click();
+
+        try :
+            self.waitCommand.waitByCssSelector("#shopping_cart_container > a > span")
+        except:assert False
+        cartIcon=self.actionCommand.findByCssSelector("#shopping_cart_container > a > span")
+        assert cartIcon.text=="1"
+
+        self.method=sys._getframe().f_code.co_name
+
+    def test_whenClickRemoveToCart_shouldBeCartItemIconBeEmpty(self):
+        self.waitCommand.waitById(self.userNameId)
+        userNameInput=self.actionCommand.findById(self.userNameId)
+        passwordInput=self.actionCommand.findById(self.passwordId)
+        self.actionChains.send_keys_to_element(userNameInput,self.standardUser)
+        self.actionChains.send_keys_to_element(passwordInput,self.secretSauce)
+        self.actionChains.perform()
         loginBtn=self.actionCommand.findById(self.loginButtonId)
         loginBtn.click();
 
@@ -177,6 +204,12 @@ class Test_Sauce :
             self.waitCommand.waitByCssSelector("#shopping_cart_container > a > span")
         except:assert False
         cartIcon=self.actionCommand.findByCssSelector("#shopping_cart_container > a > span")
-        assert cartIcon.text=="1"
-
-        self.method=sys._getframe().f_code.co_name
+        if cartIcon.text!="1":assert False;
+        self.waitCommand.waitById(self.removeSauceLabsBackpackId)
+        removeToCartBtn=self.actionCommand.findById(self.removeSauceLabsBackpackId);
+        removeToCartBtn.click();
+        try:
+            cartIcon=self.actionCommand.findByCssSelector(
+                "#shopping_cart_container > a > span");
+        except:assert True; self.method=sys._getframe().f_code.co_name;
+       

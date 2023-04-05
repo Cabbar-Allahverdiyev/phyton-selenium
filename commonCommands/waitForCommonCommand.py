@@ -19,4 +19,4 @@ class WaitForCommonCommand:
     
     def waitByCssSelector(self,cssSelector:str,time=5):
         WebDriverWait(self.driver,time).until(
-            expected_conditions.visibility_of_element_located((By.XPATH,cssSelector)));
+            expected_conditions.visibility_of_element_located((By.CSS_SELECTOR,cssSelector)));
